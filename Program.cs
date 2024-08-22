@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using OpgaverAPI.Context;
+
 namespace OpgaverAPI
 {
     public class Program
@@ -7,10 +10,28 @@ namespace OpgaverAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
+            // Specify when frontend is created
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+                    }
+                );
+            });
+
+            IConfiguration Configuration = builder.Configuration;
+
+            string connectionString = Configuration.GetConnectionString("DefaultConnection")
+                                      ?? Environment.GetEnvironmentVariable("DefaultConnection");
+
+            builder.Services.AddDbContext<AppDBContext>(options =>
+                options.UseNpgsql(connectionString));
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -27,6 +48,7 @@ namespace OpgaverAPI
 
             app.UseAuthorization();
 
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.MapControllers();
 
