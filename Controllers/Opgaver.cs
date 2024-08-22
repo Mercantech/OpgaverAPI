@@ -35,5 +35,14 @@ namespace OpgaverAPI.Controllers
 
             return Ok(dieselData);
         }
+        [HttpGet("Wordle")]
+        public IActionResult GetWordleWords()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "wordle.json");
+            var jsonData = System.IO.File.ReadAllText(filePath);
+            var dieselData = JsonSerializer.Deserialize<object>(jsonData);
+
+            return Ok(dieselData);
+        }
     }
 }
