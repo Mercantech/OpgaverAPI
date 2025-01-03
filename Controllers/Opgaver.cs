@@ -44,5 +44,14 @@ namespace OpgaverAPI.Controllers
 
             return Ok(dieselData);
         }
+        [HttpGet("Countries")]
+        public IActionResult GetCountries()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "countries.json");
+            var jsonData = System.IO.File.ReadAllText(filePath);
+            var countriesData = JsonSerializer.Deserialize<object>(jsonData);
+
+            return Ok(countriesData);
+        }
     }
 }
