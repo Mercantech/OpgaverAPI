@@ -1,6 +1,6 @@
-
 using Microsoft.EntityFrameworkCore;
 using OpgaverAPI.Context;
+using MongoDB.Driver;
 
 namespace OpgaverAPI
 {
@@ -35,12 +35,27 @@ namespace OpgaverAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Tilføj MongoDB konfiguration
+            builder.Services.AddSingleton<IMongoClient>(sp =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString("MongoDB");
+                Console.WriteLine($"MongoDB Connection String: {connectionString}");
+                return new MongoClient(connectionString);
+            });
+
+            builder.Services.AddScoped(sp =>
+            {
+                var client = sp.GetRequiredService<IMongoClient>();
+                var database = client.GetDatabase("opgaver");
+                return database;
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
 
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
 

@@ -44,7 +44,7 @@ namespace OpgaverAPI.Controllers
 
             return Ok(dieselData);
         }
-        [HttpGet("Countries")]
+        [HttpGet("CountriesRAW")]
         public IActionResult GetCountries()
         {
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "countries.json");
