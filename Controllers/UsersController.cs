@@ -40,11 +40,11 @@ namespace OpgaverAPI.Controllers
             }
 
             return user;
-        }   
+        }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(string id, User user)
         {
             if (id != user.Id)
             {
@@ -99,7 +99,7 @@ namespace OpgaverAPI.Controllers
             return NoContent();
         }
 
-        private bool UserExists(int id)
+        private bool UserExists(string id)
         {
             return _context.Users.Any(e => e.Id == id);
         }
