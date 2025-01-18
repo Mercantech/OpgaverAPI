@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using OpgaverAPI.Context;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace OpgaverAPI
 {
@@ -34,7 +38,32 @@ namespace OpgaverAPI
             builder.Services.AddControllers()
                 .AddNewtonsoftJson();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
             // Tilføj MongoDB konfiguration
             builder.Services.AddSingleton<IMongoClient>(sp =>
@@ -51,6 +80,21 @@ namespace OpgaverAPI
                 return database;
             });
 
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -62,11 +106,15 @@ namespace OpgaverAPI
 
             app.UseWebSockets();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseCors(MyAllowSpecificOrigins);
 
             app.MapControllers();
+
+            app.MapGet("/", () => Results.Redirect("/swagger"));
 
             app.Run();
         }

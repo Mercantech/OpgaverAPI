@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OpgaverAPI.Models;
 using OpgaverAPI.Context;
-
+using Microsoft.AspNetCore.Authorization;
 namespace OpgaverAPI.Controllers
 {
     [ApiController]
@@ -23,18 +23,60 @@ namespace OpgaverAPI.Controllers
             return await _context.Champions.ToListAsync();
         }
 
-        // GET: /LeagueOfLegends/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<LolChampion>> GetChampion(int id)
+        // POST: /LeagueOfLegends
+        [Authorize(Roles = "Mags")]
+        [HttpPost]
+        public async Task<ActionResult<LolChampion>> CreateChampion(LolChampion champion)
+        {
+            _context.Champions.Add(champion);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetChampion), new { id = champion.Id }, champion);
+        }
+
+        // PUT: /LeagueOfLegends/5
+        [Authorize(Roles = "Mags")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateChampion(string id, LolChampion champion)
+        {
+            if (id != champion.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(champion).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ChampionExists(id))
+                {
+                    return NotFound();
+                }
+                throw;
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: /LeagueOfLegends/5
+        [Authorize(Roles = "Mags")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteChampion(string id)
         {
             var champion = await _context.Champions.FindAsync(id);
-
             if (champion == null)
             {
                 return NotFound();
             }
 
-            return champion;
+            _context.Champions.Remove(champion);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // GET: /LeagueOfLegends/name/{name}
@@ -88,71 +130,20 @@ namespace OpgaverAPI.Controllers
             return allClasses;
         }
 
-        private bool ChampionExists(string id)
-        {
-            return _context.Champions.Any(e => e.Id == id);
-        }
-    }
-}
-
-// Disabled Endpoints
-
-// POST:
-/*LeagueOfLegends
-       [HttpPost]
-       public async Task<ActionResult<LolChampion>> CreateChampion(LolChampion champion)
-       {
-           _context.Champions.Add(champion);
-           await _context.SaveChangesAsync();
-
-           return CreatedAtAction(nameof(GetChampion), new { id = champion.Id }, champion);
-       }
-*/
-
-
-/*
-// DELETE: /LeagueOfLegends/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteChampion(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<LolChampion>> GetChampion(string id)
         {
             var champion = await _context.Champions.FindAsync(id);
             if (champion == null)
             {
                 return NotFound();
             }
-
-            _context.Champions.Remove(champion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return champion;
         }
-        */
 
-// PUT: /LeagueOfLegends/5 (Disabled)
-/*
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChampion(string id, LolChampion champion)
+        private bool ChampionExists(string id)
         {
-            if (id != champion.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(champion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChampionExists(id))
-                {
-                    return NotFound();
-                }
-                throw;
-            }
-
-            return NoContent();
+            return _context.Champions.Any(e => e.Id == id);
         }
-*/
+    }
+}
