@@ -32,9 +32,7 @@ namespace OpgaverAPI.Controllers
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "diesel.json");
             var jsonData = System.IO.File.ReadAllText(filePath);
-            var dieselData = JsonSerializer.Deserialize<object>(jsonData);
-
-            return Ok(dieselData);
+            return Content(jsonData, "application/json");
         }
         [HttpGet("Miles95")]
         public IActionResult GetMiles95()
@@ -47,9 +45,7 @@ namespace OpgaverAPI.Controllers
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "miles95.json");
             var jsonData = System.IO.File.ReadAllText(filePath);
-            var dieselData = JsonSerializer.Deserialize<object>(jsonData);
-
-            return Ok(dieselData);
+            return Content(jsonData, "application/json");
         }
         [HttpGet("Bilbasen")]
         public IActionResult GetBilbasen()
@@ -62,9 +58,7 @@ namespace OpgaverAPI.Controllers
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "bilbasen.json");
             var jsonData = System.IO.File.ReadAllText(filePath);
-            var dieselData = JsonSerializer.Deserialize<object>(jsonData);
-
-            return Ok(dieselData);
+            return Content(jsonData, "application/json");
         }
         [HttpGet("Wordle")]
         public IActionResult GetWordleWords()
@@ -77,9 +71,7 @@ namespace OpgaverAPI.Controllers
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "wordle.json");
             var jsonData = System.IO.File.ReadAllText(filePath);
-            var dieselData = JsonSerializer.Deserialize<object>(jsonData);
-
-            return Ok(dieselData);
+            return Content(jsonData, "application/json");
         }
         [HttpGet("CountriesRAW")]
         public IActionResult GetCountries()
@@ -92,9 +84,7 @@ namespace OpgaverAPI.Controllers
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "JSON", "countries.json");
             var jsonData = System.IO.File.ReadAllText(filePath);
-            var countriesData = JsonSerializer.Deserialize<object>(jsonData);
-
-            return Ok(countriesData);
+            return Content(jsonData, "application/json");
         }
         [HttpGet("Stats")]
         public IActionResult GetStats()

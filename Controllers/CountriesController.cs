@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using MongoDB.Bson;
 using OpgaverAPI.Models;
 
 namespace OpgaverAPI.Controllers
@@ -143,6 +144,115 @@ namespace OpgaverAPI.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in FilterCountries: {ex.Message}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+        /* PUT må ikke være åben
+        [HttpPut("name/{commonName}")]
+        public async Task<IActionResult> UpdateByCommonName(string commonName, [FromBody] CountryUpdateDto updateDto)
+        {
+            try
+            {
+                Console.WriteLine($"Attempting to update country: {commonName}"); // Debug log
+                
+                var filter = Builders<Country>.Filter.Eq("name.common", commonName);
+                var country = await _countries.Find(filter).FirstOrDefaultAsync();
+                
+                if (country == null)
+                {
+                    Console.WriteLine($"Country not found: {commonName}"); // Debug log
+                    return NotFound($"Country with common name '{commonName}' not found");
+                }
+
+                // Opdater kun de felter der er inkluderet i DTO'en
+                country.Name = updateDto.Name;
+                country.Population = updateDto.Population;
+                country.Region = updateDto.Region;
+                country.Subregion = updateDto.Subregion;
+                country.Languages = updateDto.Languages;
+                country.UnMember = updateDto.UnMember;
+                country.Capital = updateDto.Capital;
+                country.Maps = updateDto.Maps;
+                country.Flags = updateDto.Flags;
+                country.Landlocked = updateDto.Landlocked;
+                country.Borders = updateDto.Borders;
+                country.Area = updateDto.Area;
+
+                var updateResult = await _countries.ReplaceOneAsync(filter, country);
+
+                Console.WriteLine($"Successfully updated country: {commonName}"); // Debug log
+                return Ok(country);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating country: {ex.Message}"); // Debug log
+                return StatusCode(500, ex.Message);
+            }
+        }
+        
+        [HttpPut("mapillary")]
+        public async Task<IActionResult> AddMapillary(string commonName, [FromBody] AddmapillaryDTO addmapillaryDTO)
+        {
+            try
+            {
+                Console.WriteLine($"Attempting to add Mapillary images to country: {commonName}"); // Debug log
+
+                var filter = Builders<Country>.Filter.Eq("name.common", commonName);
+                var country = await _countries.Find(filter).FirstOrDefaultAsync();
+
+                if (country == null)
+                {
+                    Console.WriteLine($"Country not found: {commonName}"); // Debug log
+                    return NotFound($"Country with common name '{commonName}' not found");
+                }
+
+                // Initialiser Mapillary array hvis det ikke findes
+                if (country.Maps == null)
+                    country.Maps = new Maps();
+                if (country.Maps.Mapillary == null)
+                    country.Maps.Mapillary = new string[] { };
+
+                // Opret en HashSet med eksisterende IDs for effektiv søgning
+                var existingIds = new HashSet<string>(country.Maps.Mapillary);
+                var newIds = addmapillaryDTO.Mapillary.Where(id => !existingIds.Contains(id));
+
+                // Kombiner eksisterende og nye IDs
+                country.Maps.Mapillary = country.Maps.Mapillary.Concat(newIds).ToArray();
+
+                await _countries.ReplaceOneAsync(filter, country);
+
+                Console.WriteLine($"Successfully added {newIds.Count()} new Mapillary images to {commonName}"); // Debug log
+                return Ok(country);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding Mapillary images: {ex.Message}"); // Debug log
+                return StatusCode(500, ex.Message);
+            }
+        }
+        */
+        [HttpGet("with-mapillary")]
+        public async Task<IActionResult> GetCountriesWithMapillary()
+        {
+            try
+            {
+                Console.WriteLine("Attempting to fetch countries with Mapillary images"); // Debug log
+
+                var filter = Builders<Country>.Filter.And(
+                    Builders<Country>.Filter.Exists("maps.mapillary"),
+                    Builders<Country>.Filter.Ne("maps.mapillary", BsonNull.Value),
+                    Builders<Country>.Filter.Ne("maps.mapillary", new BsonArray())
+                );
+
+                var countries = await _countries.Find(filter).ToListAsync();
+
+                Console.WriteLine($"Found {countries.Count} countries with Mapillary images"); // Debug log
+
+                return Ok(countries);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching countries with Mapillary: {ex.Message}"); // Debug log
                 return StatusCode(500, ex.Message);
             }
         }

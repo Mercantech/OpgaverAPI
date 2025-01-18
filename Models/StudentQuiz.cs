@@ -23,6 +23,9 @@ namespace OpgaverAPI.Models
 
         [BsonElement("updatedAt")]
         public DateTime? UpdatedAt { get; set; }
+
+        [BsonElement("secretKey")]
+        public string? SecretKey { get; set; }
     }
 
     public class Question
@@ -40,15 +43,10 @@ namespace OpgaverAPI.Models
     public class StudentQuizOverviewDTO
     {
         public string Id { get; set; }
-
         public string MadeBy { get; set; }
-
         public string Topic { get; set; }
-
         public int NumberOfQuestions { get; set; }
-
         public DateTime CreatedAt { get; set; }
-
     }
 
     public class StudentQuizPostDTO
@@ -56,6 +54,7 @@ namespace OpgaverAPI.Models
         public string MadeBy { get; set; }
         public string Topic { get; set; }
         public List<Question> Questions { get; set; }
+        public string? SecretKey { get; set; }
     }
 
     public class StudentQuizPutDTO

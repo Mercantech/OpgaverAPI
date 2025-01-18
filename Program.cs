@@ -31,7 +31,8 @@ namespace OpgaverAPI
 
             builder.Services.AddDbContext<AppDBContext>(options =>
                 options.UseNpgsql(connectionString));
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -58,6 +59,8 @@ namespace OpgaverAPI
             app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
+
+            app.UseWebSockets();
 
             app.UseAuthorization();
 

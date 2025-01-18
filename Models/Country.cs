@@ -186,6 +186,9 @@ namespace OpgaverAPI.Models
 
         [BsonElement("openStreetMaps")]
         public string OpenStreetMaps { get; set; }
+
+        [BsonElement("mapillary")]
+        public string[] Mapillary { get; set; }
     }
 
     public class Car
@@ -233,5 +236,25 @@ namespace OpgaverAPI.Models
     {
         [BsonElement("common")]
         public string Common { get; set; }
+    }
+
+    public class CountryUpdateDto
+    {
+        public Name Name { get; set; }
+        public int Population { get; set; }
+        public string Region { get; set; }
+        public string? Subregion { get; set; }
+        public Dictionary<string, string> Languages { get; set; }
+        public bool UnMember { get; set; }
+        public string[] Capital { get; set; }
+        public Maps Maps { get; set; }
+        public Flags Flags { get; set; }
+        public bool Landlocked { get; set; }
+        public string[] Borders { get; set; }
+        public double Area { get; set; }
+    }
+    public class AddmapillaryDTO
+    {
+        public string[] Mapillary { get; set; }
     }
 }
