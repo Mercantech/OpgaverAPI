@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using OpgaverAPI.Models;
-
+using Microsoft.AspNetCore.Authorization;
 namespace OpgaverAPI.Controllers
 {
     [ApiController]
@@ -147,17 +147,18 @@ namespace OpgaverAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        /* PUT må ikke være åben
+
+        [Authorize(Roles = "Mags")]
         [HttpPut("name/{commonName}")]
         public async Task<IActionResult> UpdateByCommonName(string commonName, [FromBody] CountryUpdateDto updateDto)
         {
             try
             {
                 Console.WriteLine($"Attempting to update country: {commonName}"); // Debug log
-                
+
                 var filter = Builders<Country>.Filter.Eq("name.common", commonName);
                 var country = await _countries.Find(filter).FirstOrDefaultAsync();
-                
+
                 if (country == null)
                 {
                     Console.WriteLine($"Country not found: {commonName}"); // Debug log
@@ -189,7 +190,8 @@ namespace OpgaverAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        
+
+        [Authorize(Roles = "Mags")]
         [HttpPut("mapillary")]
         public async Task<IActionResult> AddMapillary(string commonName, [FromBody] AddmapillaryDTO addmapillaryDTO)
         {
@@ -230,7 +232,7 @@ namespace OpgaverAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        */
+
         [HttpGet("with-mapillary")]
         public async Task<IActionResult> GetCountriesWithMapillary()
         {
