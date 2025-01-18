@@ -7,6 +7,9 @@ namespace OpgaverAPI.Context
     {
         public DbSet<User> Users { get; set; }
         public DbSet<LolChampion> Champions { get; set; }
+        public DbSet<Game> Games { get; set; }
+        public DbSet<Highscore> Highscores { get; set; }
+
 
         public AppDBContext(DbContextOptions<AppDBContext> options)
             : base(options)

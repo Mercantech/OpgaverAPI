@@ -10,6 +10,7 @@
         public string PasswordBackdoor { get; set; }
         // Only for educational purposes, not in the final product!
         public List<UserRole> Roles { get; set; } = new List<UserRole>() { UserRole.User };
+        public virtual ICollection<Highscore> Highscores { get; set; } = new List<Highscore>();
     }
 
     public enum UserRole
