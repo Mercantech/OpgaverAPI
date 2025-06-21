@@ -21,6 +21,10 @@ namespace OpgaverAPI.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Henter data om dieselpriser.
+        /// </summary>
+        /// <returns>JSON data med dieselpriser.</returns>
         [HttpGet("Diesel")]
         public IActionResult GetDiesel()
         {
@@ -34,6 +38,10 @@ namespace OpgaverAPI.Controllers
             var jsonData = System.IO.File.ReadAllText(filePath);
             return Content(jsonData, "application/json");
         }
+        /// <summary>
+        /// Henter data om Miles95 benzinpriser.
+        /// </summary>
+        /// <returns>JSON data med Miles95 priser.</returns>
         [HttpGet("Miles95")]
         public IActionResult GetMiles95()
         {
@@ -47,6 +55,10 @@ namespace OpgaverAPI.Controllers
             var jsonData = System.IO.File.ReadAllText(filePath);
             return Content(jsonData, "application/json");
         }
+        /// <summary>
+        /// Henter data fra Bilbasen.
+        /// </summary>
+        /// <returns>JSON data fra Bilbasen.</returns>
         [HttpGet("Bilbasen")]
         public IActionResult GetBilbasen()
         {
@@ -60,6 +72,10 @@ namespace OpgaverAPI.Controllers
             var jsonData = System.IO.File.ReadAllText(filePath);
             return Content(jsonData, "application/json");
         }
+        /// <summary>
+        /// Henter en liste af Wordle-ord.
+        /// </summary>
+        /// <returns>JSON data med Wordle-ord.</returns>
         [HttpGet("Wordle")]
         public IActionResult GetWordleWords()
         {
@@ -73,6 +89,10 @@ namespace OpgaverAPI.Controllers
             var jsonData = System.IO.File.ReadAllText(filePath);
             return Content(jsonData, "application/json");
         }
+        /// <summary>
+        /// Henter rå lande-data.
+        /// </summary>
+        /// <returns>JSON data med landeinformation.</returns>
         [HttpGet("CountriesRAW")]
         public IActionResult GetCountries()
         {
@@ -86,6 +106,10 @@ namespace OpgaverAPI.Controllers
             var jsonData = System.IO.File.ReadAllText(filePath);
             return Content(jsonData, "application/json");
         }
+        /// <summary>
+        /// Henter statistik over API-kald til de forskellige endpoints i denne controller.
+        /// </summary>
+        /// <returns>Et JSON-objekt med antallet af kald for hvert endpoint.</returns>
         [HttpGet("Stats")]
         public IActionResult GetStats()
         {

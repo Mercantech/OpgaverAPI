@@ -28,7 +28,10 @@ namespace OpgaverAPI.Controllers
             _configuration = configuration;
         }
 
-        // GET: api/Users
+        /// <summary>
+        /// Henter alle brugere. Kræver "Mags" rolle.
+        /// </summary>
+        /// <returns>En liste af brugere</returns>
         [Authorize(Roles = "Mags")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
@@ -36,7 +39,11 @@ namespace OpgaverAPI.Controllers
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
+        /// <summary>
+        /// Henter en specifik bruger via ID. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="id">Brugerens ID</param>
+        /// <returns>Brugerobjektet</returns>
         [Authorize(Roles = "Mags")]
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
@@ -51,7 +58,12 @@ namespace OpgaverAPI.Controllers
             return user;
         }
 
-        // PUT: api/Users/5
+        /// <summary>
+        /// Opdaterer en bruger. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="id">Brugerens ID</param>
+        /// <param name="user">Brugerobjekt med opdaterede data</param>
+        /// <returns>Statuskode</returns>
         [Authorize(Roles = "Mags")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(string id, User user)
@@ -82,8 +94,11 @@ namespace OpgaverAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Opretter en ny bruger. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="user">Brugerobjektet der skal oprettes</param>
+        /// <returns>Den oprettede bruger</returns>
         [Authorize(Roles = "Mags")]
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
@@ -94,7 +109,11 @@ namespace OpgaverAPI.Controllers
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
-        // DELETE: api/Users/5
+        /// <summary>
+        /// Sletter en bruger. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="id">ID for brugeren der skal slettes</param>
+        /// <returns>Statuskode</returns>
         [Authorize(Roles = "Mags")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
@@ -111,6 +130,11 @@ namespace OpgaverAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Registrerer en ny bruger i systemet.
+        /// </summary>
+        /// <param name="register">Registreringsinformation (email, brugernavn, password)</param>
+        /// <returns>Den nyoprettede bruger</returns>
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(RegisterModel register)
         {
@@ -145,6 +169,11 @@ namespace OpgaverAPI.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
+        /// <summary>
+        /// Logger en bruger ind og returnerer en JWT token.
+        /// </summary>
+        /// <param name="login">Logininformation (email, password)</param>
+        /// <returns>JWT token</returns>
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginModel login)
         {

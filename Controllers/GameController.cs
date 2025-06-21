@@ -16,7 +16,11 @@ namespace OpgaverAPI.Controllers
             _context = context;
         }
 
-        // Opret nyt spil
+        /// <summary>
+        /// Opretter et nyt spil. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="game">Spilobjektet der skal oprettes.</param>
+        /// <returns>Det oprettede spil.</returns>
         [Authorize(Roles = "Mags")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateGame([FromBody] Game game)
@@ -33,7 +37,11 @@ namespace OpgaverAPI.Controllers
             }
         }
 
-        // Tilføj highscore
+        /// <summary>
+        /// Tilføjer en highscore for en bruger til et spil. Kræver autorisation.
+        /// </summary>
+        /// <param name="dto">Dataoverførselsobjekt med spilnavn, brugerID og score.</param>
+        /// <returns>Den tilføjede highscore.</returns>
         [Authorize]
         [HttpPost("highscore")]
         public async Task<IActionResult> AddHighscore([FromBody] AddHighscoreDto dto)
@@ -64,7 +72,11 @@ namespace OpgaverAPI.Controllers
             }
         }
 
-        // Hent top 10 highscores for et specifikt spil
+        /// <summary>
+        /// Henter top 10 highscores for et specifikt spil.
+        /// </summary>
+        /// <param name="gameName">Navnet på spillet.</param>
+        /// <returns>En liste over de 10 højeste scores.</returns>
         [HttpGet("{gameName}/top10")]
         public async Task<IActionResult> GetTop10Highscores(string gameName)
         {
@@ -93,7 +105,11 @@ namespace OpgaverAPI.Controllers
             }
         }
 
-        // Hent Score for en specifik bruger
+        /// <summary>
+        /// Henter scoren for en specifik bruger. Kræver autorisation.
+        /// </summary>
+        /// <param name="userId">Brugerens ID.</param>
+        /// <returns>Brugerens score.</returns>
         [Authorize]
         [HttpGet("score/{userId}")]
         public async Task<IActionResult> GetScore(string userId)
@@ -104,7 +120,11 @@ namespace OpgaverAPI.Controllers
             return Ok(score);
         }
 
-        // Hent top 5 og score for en specifik bruger
+        /// <summary>
+        /// Henter top 5 highscores globalt, samt den anmodende brugers score, hvis den er uden for top 5. Kræver autorisation.
+        /// </summary>
+        /// <param name="userId">Den anmodende brugers ID.</param>
+        /// <returns>Et objekt indeholdende top 5 (plus eventuelt brugerens score) og det samlede antal spillere.</returns>
         [Authorize]
         [HttpGet("top5/{userId}")]
         public async Task<IActionResult> GetTop5AndScore(string userId)

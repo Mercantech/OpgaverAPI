@@ -19,6 +19,10 @@ namespace OpgaverAPI.Controllers
             Console.WriteLine($"Connected to collection: {_countries.CollectionNamespace}"); // Debug log
         }
 
+        /// <summary>
+        /// Henter alle lande.
+        /// </summary>
+        /// <returns>En liste over alle lande.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -36,6 +40,11 @@ namespace OpgaverAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Henter et specifikt land via ID.
+        /// </summary>
+        /// <param name="id">Landets ID.</param>
+        /// <returns>Landets data.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -45,6 +54,11 @@ namespace OpgaverAPI.Controllers
             return Ok(country);
         }
 
+        /// <summary>
+        /// Henter et specifikt land via dets almindelige navn (common name).
+        /// </summary>
+        /// <param name="commonName">Landets almindelige navn.</param>
+        /// <returns>Landets data.</returns>
         [HttpGet("name/{commonName}")]
         public async Task<IActionResult> GetByCommonName(string commonName)
         {
@@ -65,6 +79,11 @@ namespace OpgaverAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Henter alle lande i en specifik region.
+        /// </summary>
+        /// <param name="region">Regionens navn.</param>
+        /// <returns>En liste over lande i den angivne region.</returns>
         [HttpGet("region/{region}")]
         public async Task<IActionResult> GetByRegion(string region)
         {
@@ -73,6 +92,10 @@ namespace OpgaverAPI.Controllers
             return Ok(countries);
         }
 
+        /// <summary>
+        /// Henter en simplificeret liste over lande, der kun indeholder navn, flag, cca3 og alternative stavemåder.
+        /// </summary>
+        /// <returns>En liste af simplificerede landeobjekter.</returns>
         [HttpGet("simplified")]
         public async Task<IActionResult> GetSimplifiedCountries()
         {
@@ -101,6 +124,17 @@ namespace OpgaverAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Filtrerer lande baseret på en række kriterier.
+        /// </summary>
+        /// <param name="region">Filtrer efter region.</param>
+        /// <param name="subregion">Filtrer efter subregion.</param>
+        /// <param name="landlocked">Filtrer efter om landet er landlocked.</param>
+        /// <param name="language">Filtrer efter sprog.</param>
+        /// <param name="minPopulation">Filtrer efter minimum befolkningstal.</param>
+        /// <param name="maxPopulation">Filtrer efter maksimum befolkningstal.</param>
+        /// <param name="unMember">Filtrer efter FN-medlemskab.</param>
+        /// <returns>En liste over lande der matcher filterkriterierne.</returns>
         [HttpGet("filter")]
         public async Task<IActionResult> FilterCountries(
             [FromQuery] string? region,
@@ -148,6 +182,12 @@ namespace OpgaverAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Opdaterer et land ud fra dets almindelige navn. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="commonName">Landets almindelige navn.</param>
+        /// <param name="updateDto">Data til opdatering.</param>
+        /// <returns>Det opdaterede land.</returns>
         [Authorize(Roles = "Mags")]
         [HttpPut("name/{commonName}")]
         public async Task<IActionResult> UpdateByCommonName(string commonName, [FromBody] CountryUpdateDto updateDto)
@@ -191,6 +231,12 @@ namespace OpgaverAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Tilføjer Mapillary billed-ID'er til et land. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="commonName">Landets almindelige navn.</param>
+        /// <param name="addmapillaryDTO">Objekt indeholdende en liste af Mapillary ID'er.</param>
+        /// <returns>Det opdaterede land.</returns>
         [Authorize(Roles = "Mags")]
         [HttpPut("mapillary")]
         public async Task<IActionResult> AddMapillary(string commonName, [FromBody] AddmapillaryDTO addmapillaryDTO)
@@ -233,6 +279,10 @@ namespace OpgaverAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Henter alle lande, der har mindst ét Mapillary billede tilknyttet.
+        /// </summary>
+        /// <returns>En liste af lande med Mapillary data.</returns>
         [HttpGet("with-mapillary")]
         public async Task<IActionResult> GetCountriesWithMapillary()
         {
@@ -250,11 +300,47 @@ namespace OpgaverAPI.Controllers
 
                 Console.WriteLine($"Found {countries.Count} countries with Mapillary images"); // Debug log
 
+                if (!countries.Any())
+                {
+                    return Ok("No countries with Mapillary images found.");
+                }
+
                 return Ok(countries);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching countries with Mapillary: {ex.Message}"); // Debug log
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Henter lande der grænser op til et specifikt land.
+        /// </summary>
+        /// <param name="commonName">Det almindelige navn på landet, hvis naboer skal findes.</param>
+        /// <returns>En liste af nabolande.</returns>
+        [HttpGet("borders/{commonName}")]
+        public async Task<IActionResult> GetBorderingCountries(string commonName)
+        {
+            try
+            {
+                var countryFilter = Builders<Country>.Filter.Eq("name.common", commonName);
+                var country = await _countries.Find(countryFilter).FirstOrDefaultAsync();
+
+                if (country == null)
+                    return NotFound($"Country with name '{commonName}' not found.");
+
+                if (country.Borders == null || !country.Borders.Any())
+                    return Ok(new List<Country>()); // Returner en tom liste, hvis der ikke er nogen grænser
+
+                var borderingCountriesFilter = Builders<Country>.Filter.In("cca3", country.Borders);
+                var borderingCountries = await _countries.Find(borderingCountriesFilter).ToListAsync();
+
+                return Ok(borderingCountries);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetBorderingCountries: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }

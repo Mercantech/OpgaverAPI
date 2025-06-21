@@ -16,14 +16,21 @@ namespace OpgaverAPI.Controllers
             _context = context;
         }
 
-        // GET: /LeagueOfLegends
+        /// <summary>
+        /// Henter alle League of Legends champions.
+        /// </summary>
+        /// <returns>En liste af champions.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LolChampion>>> GetChampions()
         {
             return await _context.Champions.ToListAsync();
         }
 
-        // POST: /LeagueOfLegends
+        /// <summary>
+        /// Opretter en ny champion. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="champion">Champion-objektet der skal oprettes.</param>
+        /// <returns>Den oprettede champion.</returns>
         [Authorize(Roles = "Mags")]
         [HttpPost]
         public async Task<ActionResult<LolChampion>> CreateChampion(LolChampion champion)
@@ -34,7 +41,12 @@ namespace OpgaverAPI.Controllers
             return CreatedAtAction(nameof(GetChampion), new { id = champion.Id }, champion);
         }
 
-        // PUT: /LeagueOfLegends/5
+        /// <summary>
+        /// Opdaterer en eksisterende champion. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="id">ID'et på den champion der skal opdateres.</param>
+        /// <param name="champion">Det opdaterede champion-objekt.</param>
+        /// <returns>Statuskode.</returns>
         [Authorize(Roles = "Mags")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateChampion(string id, LolChampion champion)
@@ -62,7 +74,11 @@ namespace OpgaverAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: /LeagueOfLegends/5
+        /// <summary>
+        /// Sletter en champion. Kræver "Mags" rolle.
+        /// </summary>
+        /// <param name="id">ID'et på den champion der skal slettes.</param>
+        /// <returns>Statuskode.</returns>
         [Authorize(Roles = "Mags")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChampion(string id)
@@ -79,7 +95,11 @@ namespace OpgaverAPI.Controllers
             return NoContent();
         }
 
-        // GET: /LeagueOfLegends/name/{name}
+        /// <summary>
+        /// Henter champions baseret på navn.
+        /// </summary>
+        /// <param name="name">Søgestrengen for champion-navn.</param>
+        /// <returns>En liste af champions der matcher søgningen.</returns>
         [HttpGet("name/{name}")]
         public async Task<ActionResult<IEnumerable<LolChampion>>> GetChampionsByName(string name)
         {
@@ -95,7 +115,11 @@ namespace OpgaverAPI.Controllers
             return champions;
         }
 
-        // GET: /LeagueOfLegends/class/{className}
+        /// <summary>
+        /// Henter champions baseret på klasse.
+        /// </summary>
+        /// <param name="className">Klassenavnet der skal søges efter.</param>
+        /// <returns>En liste af champions i den specificerede klasse.</returns>
         [HttpGet("class/{className}")]
         public async Task<ActionResult<IEnumerable<LolChampion>>> GetChampionsByClass(string className)
         {
@@ -111,7 +135,10 @@ namespace OpgaverAPI.Controllers
             return champions;
         }
 
-        // GET: /LeagueOfLegends/classes
+        /// <summary>
+        /// Henter en liste over alle unikke champion-klasser.
+        /// </summary>
+        /// <returns>En liste af klassenavne.</returns>
         [HttpGet("classes")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllClasses()
         {
@@ -130,6 +157,11 @@ namespace OpgaverAPI.Controllers
             return allClasses;
         }
 
+        /// <summary>
+        /// Henter en specifik champion via ID.
+        /// </summary>
+        /// <param name="id">ID'et på den champion der skal hentes.</param>
+        /// <returns>Champion-objektet.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<LolChampion>> GetChampion(string id)
         {

@@ -21,6 +21,10 @@ namespace OpgaverAPI.Controllers
             _studentQuizzes = database.GetCollection<StudentQuiz>("studentQuizzes");
         }
 
+        /// <summary>
+        /// Henter en oversigt over alle studenter-quizzes.
+        /// </summary>
+        /// <returns>En liste med oversigter over quizzes.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -38,6 +42,11 @@ namespace OpgaverAPI.Controllers
             return Ok(overviews);
         }
 
+        /// <summary>
+        /// Henter en specifik quiz via ID.
+        /// </summary>
+        /// <param name="id">ID'et på quizzen.</param>
+        /// <returns>Quiz-objektet.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -47,6 +56,11 @@ namespace OpgaverAPI.Controllers
             return Ok(studentQuiz);
         }
 
+        /// <summary>
+        /// Opretter en ny quiz.
+        /// </summary>
+        /// <param name="studentQuiz">Data for den nye quiz.</param>
+        /// <returns>Den oprettede quiz samt en hemmelig nøgle til senere redigering/sletning.</returns>
         [HttpPost]
         public async Task<IActionResult> Create(StudentQuizPostDTO studentQuiz)
         {
@@ -72,6 +86,12 @@ namespace OpgaverAPI.Controllers
                 });
         }
 
+        /// <summary>
+        /// Opdaterer en eksisterende quiz. Kræver en gyldig secret-key i headeren.
+        /// </summary>
+        /// <param name="id">ID'et på quizzen der skal opdateres.</param>
+        /// <param name="studentQuiz">Det opdaterede quiz-objekt.</param>
+        /// <returns>Statuskode.</returns>
         [HttpPut("{id}")]
         [RequireSecretKey]
         public async Task<IActionResult> Update(string id, StudentQuiz studentQuiz)
@@ -90,6 +110,11 @@ namespace OpgaverAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Sletter en quiz. Kræver en gyldig secret-key i headeren.
+        /// </summary>
+        /// <param name="id">ID'et på quizzen der skal slettes.</param>
+        /// <returns>Statuskode.</returns>
         [HttpDelete("{id}")]
         [RequireSecretKey]
         public async Task<IActionResult> Delete(string id)
@@ -108,6 +133,11 @@ namespace OpgaverAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Henter quizzes baseret på emne (topic).
+        /// </summary>
+        /// <param name="topic">Emnet der skal søges efter.</param>
+        /// <returns>En liste af quizzes der matcher emnet.</returns>
         [HttpGet("topic/{topic}")]
         public async Task<IActionResult> GetByTopic(string topic)
         {
@@ -117,6 +147,12 @@ namespace OpgaverAPI.Controllers
             return Ok(quizzes);
         }
 
+        /// <summary>
+        /// Opdaterer dele af en quiz. Kræver en gyldig secret-key i headeren.
+        /// </summary>
+        /// <param name="id">ID'et på quizzen der skal opdateres.</param>
+        /// <param name="patchDoc">Et JSON Patch-dokument med ændringerne.</param>
+        /// <returns>Den opdaterede quiz.</returns>
         [HttpPatch("{id}")]
         [RequireSecretKey]
         public async Task<IActionResult> PartialUpdate(string id, JsonPatchDocument<StudentQuiz> patchDoc)
@@ -136,6 +172,10 @@ namespace OpgaverAPI.Controllers
             return Ok(studentQuiz);
         }
 
+        /// <summary>
+        /// Returnerer metadata om quizzes, specifikt det samlede antal.
+        /// </summary>
+        /// <returns>En header `X-Total-Count` med antallet af quizzes.</returns>
         [HttpHead]
         public async Task<IActionResult> Head()
         {
@@ -144,6 +184,10 @@ namespace OpgaverAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Returnerer de tilladte HTTP-metoder for dette endpoint.
+        /// </summary>
+        /// <returns>En `Allow` header med de understøttede metoder.</returns>
         [HttpOptions]
         public IActionResult Options()
         {
@@ -151,6 +195,11 @@ namespace OpgaverAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Søger efter quizzes baseret på et nøgleord i emne eller 'MadeBy'-feltet.
+        /// </summary>
+        /// <param name="keyword">Nøgleordet der skal søges efter.</param>
+        /// <returns>En liste af matchende quizzes.</returns>
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string keyword)
         {
@@ -163,6 +212,10 @@ namespace OpgaverAPI.Controllers
             return Ok(results);
         }
 
+        /// <summary>
+        /// Henter statistik om quizzes grupperet efter emne.
+        /// </summary>
+        /// <returns>Statistik der viser antal quizzes og gennemsnitligt antal spørgsmål pr. emne.</returns>
         [HttpGet("stats")]
         public async Task<IActionResult> GetStats()
         {
